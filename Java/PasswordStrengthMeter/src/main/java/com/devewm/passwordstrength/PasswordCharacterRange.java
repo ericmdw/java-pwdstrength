@@ -20,7 +20,7 @@ public enum PasswordCharacterRange {
 	UTF32(0, (int) Math.pow(2, 32) - 1);
 	
 	private int lowerBound;
-	private int  upperBound;
+	private int upperBound;
 
 	private PasswordCharacterRange(int lowerBound, int upperBound) {
 		this.lowerBound = lowerBound;
