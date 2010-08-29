@@ -1,239 +1,255 @@
 package com.devewm.passwordstrength.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-//import java.text.DecimalFormat;
+import java.math.BigInteger;
+import java.util.Random;
 
 import org.junit.Test;
 
-import com.devewm.passwordstrength.PasswordCharacterRange;
+import com.devewm.passwordstrength.PasswordStrengthClass;
 import com.devewm.passwordstrength.PasswordStrengthMeter;
 
 
 public class PasswordStrengthMeterTests {
 	
 	@Test
+	public void testCodePoints() {
+		assertEquals((int) ' ', 32);
+		assertEquals((int) 'A', 65);
+		assertEquals((int) 'a', 97);
+		assertEquals((int) '¡', 161);
+		
+	}
+	
+	@Test
 	public void singleLetterPasswords() {
 		String password;
-		PasswordCharacterRange range;
-		long result;
+		BigInteger result;
 		
 		password = "a";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("1"), result);
 		
 		password = "b";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("2"), result);
 		
 		password = "z";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("26"), result);
 		
 		password = "0";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("1"), result);
 		
-		password = "a";
-		range = PasswordCharacterRange.ALPHABET_LOWER_CASE;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1, result);
-		
-		password = "b";
-		range = PasswordCharacterRange.ALPHABET_LOWER_CASE;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(2, result);
-		assertEquals('b' - 'a' + 1, result);
 	}
 	
 	@Test
 	public void twoLetterPasswords() {
 		String password;
-		PasswordCharacterRange range;
-		long result;
+		BigInteger result;
 		
 		password = "aa";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(2, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("27"), result);
 		
 		password = "ab";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(4, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("28"), result);
 		
 		password = "ba";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(5, result);
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("53"), result);
 	}
 	
 	@Test
-	public void threeLetterPasswords() {
-		String password;
-		PasswordCharacterRange range;
-		long result;
+	public void testQuickBrownFox() {
+		String fox = "thequickbrownfoxjumpsoverthelazydog";
 		
-		// 1. a
-		// 2. b
-		// 3. c
-		// 4. aa
-		// 5. ab
-		// 6. ac
-		// 7. ba
-		// 8. bb
-		// 9. bc
-		//10. ca
-		//11. cb
-		//12. cc
-		//13. aaa
-		//14. aab
-		//15. aac
-		//16. aba
-		//17. abb
-		//18. abc
-		//19. aca
-		//20. acb
-		//21. acc
-		//22. baa
-		//23. bab
-		//24. bac
-		//25. bba
-		//26. bbb
-		//27. bbc
-		//28. bca
-		//29. bcb
-		//30. bcc
-		//31. caa
-		//32. cab
-		//33. cac
-		//34. cba
-		//35. cbb
-		//36. cbc
-		//37. cca
-		//38. ccb
-		//39. ccc
-		
-		password = "abc";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(18, result);
-		
-		password = "acb";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(20, result);
-		
-		password = "bac";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(24, result);
-		
-		password = "cab";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(32, result);
-		
-		password = "cba";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(34, result);
+		BigInteger previousResult = null;
+		for(int i = 1; i <= fox.length(); i++) {
+			BigInteger result = PasswordStrengthMeter.check(fox.substring(0,i));
+			if(null != previousResult) {
+				assertTrue("Adding a letter results in at least 10 times the number of iterations", 
+						result.compareTo(previousResult.multiply(new BigInteger("10"))) > 0);
+			}
+			
+			previousResult = result;
+		}
 	}
 	
 	@Test
-	public void outOfRangePasswords() {
-		String password;
-		PasswordCharacterRange range;
-		long result;
+	public void testBigIntegerSizeLimit() {
+		Random rand = new Random();
+		StringBuffer password = new StringBuffer("");
+		for(int i = 0; i < PasswordStrengthMeter.PASSWORD_LENGTH_LIMIT; i++) {
+			password.append((char) rand.nextInt(255));
+			PasswordStrengthMeter.check(password.toString(), false);
+		}
 		
-		password = "a";
-		range = PasswordCharacterRange.ALPHABET_LOWER_CASE;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1, result);
+		Exception exception = null;
+		try {
+			password.append("a");
+			PasswordStrengthMeter.check(password.toString(), false);
+		} catch(Exception ex) {
+			exception = ex;
+		}
+		assertNotNull(exception);
 		
-		password = "A";
-		range = PasswordCharacterRange.ALPHABET_LOWER_CASE;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals('a' - 'A' + 1, result);
-		
-		password = "0";
-		range = PasswordCharacterRange.ALPHABET_LOWER_CASE;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals('a' - '0' + 1, result);
+		PasswordStrengthMeter.check(password.toString(), true);
 	}
 	
 	@Test
-	public void commonPasswords() {
-		// DecimalFormat number = new DecimalFormat();
-		// number.setGroupingUsed(true);
-		
+	public void testStrengthClassifications() {
 		String password;
-		PasswordCharacterRange range;
-		long result;
+		BigInteger result;
 		
-		password = "123456";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(3130, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 8 characters, all lower case
+		password = "aaaaaaaa";
+		assertTrue(password.length() == 8);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_LOWER_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "jesus";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(65550, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 8 characters mixed case
+		password = "AAAAAAAa";
+		assertTrue(password.length() == 8);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "password";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(2494357891L, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 8 characters mixed case plus a number
+		password = "000000Aa";
+		assertTrue(password.length() == 8);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "love";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(4913, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 8 characters mixed case plus a number and a non-alphanumeric symbol
+		password = "!!!!!Aa0";
+		assertTrue(password.length() == 8);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_8_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) >= 0);
 		
-		password = "12345678";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(823550, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 10 characters, all lower case
+		password = "aaaaaaaaaa";
+		assertTrue(password.length() == 10);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_LOWER_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "christ";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1419874, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 10 characters mixed case
+		password = "AAAAAAAAAa";
+		assertTrue(password.length() == 10);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "jesus1";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(1453933568, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 10 characters mixed case plus a number
+		password = "00000000Aa";
+		assertTrue(password.length() == 10);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "princess";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(268435472, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 10 characters mixed case plus a number and a non-alphanumeric symbol
+		password = "!!!!!!!0Aa";
+		assertTrue(password.length() == 10);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) >= 0);
 		
-		password = "blessed";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(24137571, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 12 characters, all lower case
+		password = "aaaaaaaaaaaa";
+		assertTrue(password.length() == 12);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_LOWER_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
 		
-		password = "sunshine";
-		range = PasswordCharacterRange.MINIMAL_FOR_INPUT;
-		result = PasswordStrengthMeter.check(password, range);
-		assertEquals(268435456, result);
-		// System.out.println("Password: " + password + "\nIterations: " + number.format(result));
+		// 12 characters mixed case
+		password = "AAAAAAAAAAAa";
+		assertTrue(password.length() == 12);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
+		
+		// 12 characters mixed case plus a number
+		password = "0000000000Aa";
+		assertTrue(password.length() == 12);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
+		
+		// 12 characters mixed case plus a number and a non-alphanumeric symbol
+		password = "!!!!!!!!!0Aa";
+		assertTrue(password.length() == 12);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) >= 0);
+		
+		// 16 characters, all lower case
+		password = "aaaaaaaaaaaaaaaa";
+		assertTrue(password.length() == 16);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_LOWER_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
+		
+		// 16 characters mixed case
+		password = "AAAAAAAAAAAAAAAa";
+		assertTrue(password.length() == 16);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER.getIterations()) < 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
+		
+		// 16 characters mixed case plus a number
+		password = "00000000000000Aa";
+		assertTrue(password.length() == 16);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER.getIterations()) >= 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) < 0);
+		
+		// 16 characters mixed case plus a number and a non-alphanumeric symbol
+		password = "!!!!!!!!!!!!!1Aa";
+		assertTrue(password.length() == 16);
+		result = PasswordStrengthMeter.check(password, false);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_LOWER_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER.getIterations()) > 0);
+		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) >= 0);
+		
 	}
-	
 }
