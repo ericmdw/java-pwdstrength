@@ -7,8 +7,6 @@ import java.util.TreeSet;
 import com.devewm.passwordstrength.exception.MaximumPasswordLengthExceededException;
 
 /**
- * Algorithms:
- * every possible combination: 3^3 + 3^2 + 3^1
  * @author eric
  *
  */

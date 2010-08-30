@@ -17,7 +17,7 @@ public enum PasswordStrengthClass implements Comparable<PasswordStrengthClass> {
 	LENGTH_12_MIXED_CASE(12, 65, 122, new char[] { 'a' }),
 	LENGTH_12_MIXED_CASE_WITH_NUMBER(12, 48, 122, new char[] { 'a', 'A' }),
 	LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(12, 32, 122, new char[] { 'a', 'A', '0' }),
-
+	
 	LENGTH_16_LOWER_CASE(16, 97, 122, new char[]{}),
 	LENGTH_16_MIXED_CASE(16, 65, 122, new char[] { 'a' }),
 	LENGTH_16_MIXED_CASE_WITH_NUMBER(16, 48, 122, new char[] { 'a', 'A' }),
