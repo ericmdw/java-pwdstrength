@@ -37,9 +37,9 @@ public class PasswordStrengthMeter {
 			}
 		}
 		
-		long rangeSize = 0;
+		BigInteger rangeSize = new BigInteger("0");
 		for(PasswordCharacterRange range : ranges) {
-			rangeSize += range.size();
+			rangeSize = rangeSize.add(new BigInteger(Long.toString(range.size())));
 		}
 		
 		// determine number of iterations required for brute force attack
@@ -47,7 +47,7 @@ public class PasswordStrengthMeter {
 		BigInteger result = new BigInteger("0");
 		
 		for(int i = 1; i < passwordPlaintext.length(); i++) {
-			BigInteger iteration = new BigInteger(Long.toString(rangeSize)).pow(i);
+			BigInteger iteration = rangeSize.pow(i);
 			result = result.add(iteration);
 		}
 		
@@ -59,7 +59,7 @@ public class PasswordStrengthMeter {
 				continue;
 			}
 			// 8 = 8 * 10^0, 80 = 8 * 10^1
-			BigInteger multiplier = new BigInteger(Long.toString(rangeSize)).pow(power);
+			BigInteger multiplier = rangeSize.pow(power);
 			BigInteger iteration = new BigInteger(Long.toString(placeValue)).multiply(multiplier);
 			result = result.add(iteration);
 		}
