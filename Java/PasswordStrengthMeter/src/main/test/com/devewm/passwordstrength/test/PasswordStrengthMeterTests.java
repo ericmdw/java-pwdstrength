@@ -45,6 +45,10 @@ public class PasswordStrengthMeterTests {
 		result = PasswordStrengthMeter.check(password, false);
 		assertEquals(new BigInteger("1"), result);
 		
+		password = "3";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("4"), result);
+		
 	}
 	
 	@Test
@@ -63,6 +67,45 @@ public class PasswordStrengthMeterTests {
 		password = "ba";
 		result = PasswordStrengthMeter.check(password, false);
 		assertEquals(new BigInteger("53"), result);
+	}
+	
+	@Test
+	public void threeLetterPasswords() {
+		String password;
+		BigInteger result;
+		
+		// 26^2 + 26^1 + 1
+		password = "aaa";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("703"), result);
+		
+		// (36^2 + 36^1) + 26*(36^0) + 1 = 1359
+		password = "AAA";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("703"), result);
+		
+		// (26^2 + 26^1) + 2
+		password = "aab";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("704"), result);
+		
+		// (26^2 + 26^1) + 1*(26^2) + 1 = 1379
+		password = "baa";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("1379"), result);
+		
+		// (36^2 + 36^1) + 26*(36^0) + 1 = 1359
+		password = "aa0";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("1359"), result);
+		
+		// (62^2 + 62^1) + 26*(62^1) + 52*(62^0) + 1 = 5571
+		password = "aA0";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("5571"), result);
+		
+		
+		
 	}
 	
 	@Test
