@@ -104,7 +104,10 @@ public class PasswordStrengthMeterTests {
 		result = PasswordStrengthMeter.check(password, false);
 		assertEquals(new BigInteger("5571"), result);
 		
-		
+		// (62^2 + 62^1) + 25*(62^2) + 27*(62^1) + 52*(62^0) + 1 = 101733
+		password = "zB0";
+		result = PasswordStrengthMeter.check(password, false);
+		assertEquals(new BigInteger("101733"), result);
 		
 	}
 	
