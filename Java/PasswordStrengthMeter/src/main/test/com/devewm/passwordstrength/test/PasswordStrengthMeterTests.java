@@ -10,6 +10,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.devewm.passwordstrength.PasswordCharacterRange;
 import com.devewm.passwordstrength.PasswordStrengthClass;
 import com.devewm.passwordstrength.PasswordStrengthMeter;
 import com.devewm.passwordstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
@@ -121,7 +122,7 @@ public class PasswordStrengthMeterTests {
 	}
 	
 	@Test
-	public void testQuickBrownFox() {
+	public void quickBrownFox() {
 		String fox = "thequickbrownfoxjumpsoverthelazydog";
 		
 		BigInteger previousResult = null;
@@ -137,7 +138,7 @@ public class PasswordStrengthMeterTests {
 	}
 	
 	@Test
-	public void testBigIntegerSizeLimit() {
+	public void bigIntegerSizeLimit() {
 		Random rand = new Random();
 		StringBuffer password = new StringBuffer("");
 		for(int i = 0; i < PasswordStrengthMeter.PASSWORD_LENGTH_LIMIT; i++) {
@@ -158,7 +159,7 @@ public class PasswordStrengthMeterTests {
 	}
 	
 	@Test
-	public void testStrengthClassifications() {
+	public void strengthClassifications() {
 		String password;
 		BigInteger result;
 		
@@ -309,7 +310,7 @@ public class PasswordStrengthMeterTests {
 	}
 	
 	@Test
-	public void testCustomImpl() {
+	public void customImpl() {
 		PasswordStrengthMeter defaultMeter = PasswordStrengthMeter.getInstance();
 		PasswordStrengthMeter customSingletonMeter = PasswordStrengthMeter.getInstance(MockPasswordStrengthMeterImpl.class);
 		assertNotNull(defaultMeter);
@@ -325,5 +326,34 @@ public class PasswordStrengthMeterTests {
 		
 		assertTrue(defaultMeter != customSingletonMeter);
 		assertTrue(customSingletonMeter == customSingletonMeter2);
+	}
+	
+	@Test
+	public void characterOutOfBounds() {
+		String password;
+		BigInteger result;
+		PasswordCharacterRange range = null;
+		
+		password = new Character((char) 255).toString();
+		result = passwordStrengthMeter.check(password, false);
+		for(PasswordCharacterRange possibleRange : PasswordCharacterRange.values()) {
+			if(possibleRange.contains(password.charAt(0))) {
+				range = possibleRange;
+				break;
+			}
+		}
+		assertEquals(result, new BigInteger(new Long(range.position(password.charAt(0)) + 1).toString()));
+		
+		password = new Character((char) 256).toString();
+		BigInteger result2 = passwordStrengthMeter.check(password, false);
+		for(PasswordCharacterRange possibleRange : PasswordCharacterRange.values()) {
+			if(possibleRange.contains(password.charAt(0))) {
+				range = possibleRange;
+				break;
+			}
+		}
+		assertEquals(result2, new BigInteger(new Long(range.position(password.charAt(0)) + 1).toString()));
+		// TODO make sure it passes the following assertion by adding to the PasswordCharacterRange class the full UTF codepage set
+//		assertTrue(result2.compareTo(result.add(new BigInteger("1"))) > 0);
 	}
 }
