@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.devewm.passwordstrength.PasswordStrengthClass;
 import com.devewm.passwordstrength.PasswordStrengthMeter;
+import com.devewm.passwordstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
 
 
 public class PasswordStrengthMeterTests {
@@ -305,5 +306,24 @@ public class PasswordStrengthMeterTests {
 		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER.getIterations()) > 0);
 		assertTrue(result.compareTo(PasswordStrengthClass.LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL.getIterations()) >= 0);
 		
+	}
+	
+	@Test
+	public void testCustomImpl() {
+		PasswordStrengthMeter defaultMeter = PasswordStrengthMeter.getInstance();
+		PasswordStrengthMeter customSingletonMeter = PasswordStrengthMeter.getInstance(MockPasswordStrengthMeterImpl.class);
+		assertNotNull(defaultMeter);
+		assertNotNull(customSingletonMeter);
+		
+		String password = "custom";
+		BigInteger defaultResult = defaultMeter.check(password);
+		BigInteger customResult = customSingletonMeter.check(password);
+		
+		assertTrue(defaultResult.compareTo(customResult) > 0);
+		
+		PasswordStrengthMeter customSingletonMeter2 = PasswordStrengthMeter.getInstance(customSingletonMeter.getClass());
+		
+		assertTrue(defaultMeter != customSingletonMeter);
+		assertTrue(customSingletonMeter == customSingletonMeter2);
 	}
 }
