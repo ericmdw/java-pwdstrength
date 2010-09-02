@@ -2,8 +2,11 @@ package com.devewm.passwordstrength;
 
 import java.math.BigInteger;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
+import com.devewm.passwordstrength.exception.UnsupportedImplementationException;
 import com.devewm.passwordstrength.exception.MaximumPasswordLengthExceededException;
 
 /**
@@ -13,16 +16,51 @@ import com.devewm.passwordstrength.exception.MaximumPasswordLengthExceededExcept
 public class PasswordStrengthMeter {
 	public static final int PASSWORD_LENGTH_LIMIT = 256;
 	
-	public static final BigInteger check(String passwordPlaintext) {
-		return PasswordStrengthMeter.check(passwordPlaintext, false);
+	private static Map<Class<? extends PasswordStrengthMeter>, Object> impls;
+	
+	protected PasswordStrengthMeter() {
 	}
 	
-	public static final BigInteger check(String passwordPlaintext, boolean bypassMemoryLimitCheck) {
+	public static PasswordStrengthMeter getInstance() {
+		if(null == impls) {
+			impls = new HashMap<Class<? extends PasswordStrengthMeter>, Object>();
+		}
+		Object impl = impls.get(PasswordStrengthMeter.class);
+		if(null == impl) {
+			impl = new PasswordStrengthMeter();
+			impls.put(PasswordStrengthMeter.class, impl);
+		}
+		
+		return (PasswordStrengthMeter) impl;
+	}
+	
+	public static PasswordStrengthMeter getInstance(Class<? extends PasswordStrengthMeter> clazz) {
+		if(null == impls) {
+			impls = new HashMap<Class<? extends PasswordStrengthMeter>, Object>();
+		}
+		Object impl = impls.get(clazz);
+		if(null == impl) {
+			try {
+				impl = clazz.newInstance();
+			} catch (Exception e) {
+				throw new UnsupportedImplementationException(clazz, e);
+			}
+			impls.put(clazz, impl);
+		}
+		
+		return (PasswordStrengthMeter) impl;
+	}
+	
+	public BigInteger check(String passwordPlaintext) {
+		return check(passwordPlaintext, false);
+	}
+	
+	public BigInteger check(String passwordPlaintext, boolean bypassLengthLimitCheck) {
 		if(null == passwordPlaintext || passwordPlaintext.length() < 1) {
 			return new BigInteger("0");
 		}
 		
-		if(!bypassMemoryLimitCheck && passwordPlaintext.length() > PASSWORD_LENGTH_LIMIT) {
+		if(!bypassLengthLimitCheck && passwordPlaintext.length() > PASSWORD_LENGTH_LIMIT) {
 			throw new MaximumPasswordLengthExceededException();
 		}
 		
@@ -67,7 +105,7 @@ public class PasswordStrengthMeter {
 		return result.add(new BigInteger("1"));
 	}
 	
-	private static long getCharacterPositionInRangeSet(char character, TreeSet<PasswordCharacterRange> ranges) {
+	private long getCharacterPositionInRangeSet(char character, TreeSet<PasswordCharacterRange> ranges) {
 		long position = 0;
 		
 		for(PasswordCharacterRange range : ranges) {
@@ -92,9 +130,11 @@ public class PasswordStrengthMeter {
 		}
 		password.setLength(password.length() - 1);
 		
+		PasswordStrengthMeter passwordStrengthMeter = PasswordStrengthMeter.getInstance();
+		
 		DecimalFormat number = new DecimalFormat();
 		number.setGroupingUsed(true);
-		BigInteger result = PasswordStrengthMeter.check(password.toString(), true);
+		BigInteger result = passwordStrengthMeter.check(password.toString(), true);
 		System.out.println(password + ": " + number.format(result));
 	}
 	
