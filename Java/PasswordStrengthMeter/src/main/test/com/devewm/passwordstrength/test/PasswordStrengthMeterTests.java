@@ -142,7 +142,7 @@ public class PasswordStrengthMeterTests {
 		Random rand = new Random();
 		StringBuffer password = new StringBuffer("");
 		for(int i = 0; i < PasswordStrengthMeter.PASSWORD_LENGTH_LIMIT; i++) {
-			password.append((char) rand.nextInt(255));
+			password.append(Character.toChars(rand.nextInt(Character.MAX_CODE_POINT)));
 			passwordStrengthMeter.check(password.toString(), false);
 		}
 		
@@ -329,31 +329,18 @@ public class PasswordStrengthMeterTests {
 	}
 	
 	@Test
-	public void characterOutOfBounds() {
-		String password;
-		BigInteger result;
-		PasswordCharacterRange range = null;
-		
-		password = new Character((char) 255).toString();
-		result = passwordStrengthMeter.check(password, false);
-		for(PasswordCharacterRange possibleRange : PasswordCharacterRange.values()) {
-			if(possibleRange.contains(password.charAt(0))) {
-				range = possibleRange;
-				break;
+	public void characterRanges() {
+		for(int i = 0; i <= Character.MAX_CODE_POINT; i++) {
+			char[] codePointChars = Character.toChars(i);
+			String password = new String(codePointChars);
+			if(codePointChars.length > 1) {
+				assertTrue(Character.codePointCount(password, 0, password.length()) == 1);
 			}
+			
+			assertTrue(Character.isValidCodePoint(i));
+			
+			PasswordCharacterRange range = new PasswordCharacterRange(password);
+			assertTrue(i + " is a valid codepoint in a known unicode block", range.size() > 0);
 		}
-		assertEquals(result, new BigInteger(new Long(range.position(password.charAt(0)) + 1).toString()));
-		
-		password = new Character((char) 256).toString();
-		BigInteger result2 = passwordStrengthMeter.check(password, false);
-		for(PasswordCharacterRange possibleRange : PasswordCharacterRange.values()) {
-			if(possibleRange.contains(password.charAt(0))) {
-				range = possibleRange;
-				break;
-			}
-		}
-		assertEquals(result2, new BigInteger(new Long(range.position(password.charAt(0)) + 1).toString()));
-		// TODO make sure it passes the following assertion by adding to the PasswordCharacterRange class the full UTF codepage set
-//		assertTrue(result2.compareTo(result.add(new BigInteger("1"))) > 0);
 	}
 }

@@ -4,10 +4,9 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 
-import com.devewm.passwordstrength.exception.UnsupportedImplementationException;
 import com.devewm.passwordstrength.exception.MaximumPasswordLengthExceededException;
+import com.devewm.passwordstrength.exception.UnsupportedImplementationException;
 
 /**
  * @author eric
@@ -60,25 +59,12 @@ public class PasswordStrengthMeter {
 			return new BigInteger("0");
 		}
 		
-		if(!bypassLengthLimitCheck && passwordPlaintext.length() > PASSWORD_LENGTH_LIMIT) {
+		if(!bypassLengthLimitCheck && Character.codePointCount(passwordPlaintext, 0, passwordPlaintext.length()) > PASSWORD_LENGTH_LIMIT) {
 			throw new MaximumPasswordLengthExceededException();
 		}
 		
-		TreeSet<PasswordCharacterRange> ranges = new TreeSet<PasswordCharacterRange>();
-		for(int i = 0; i < passwordPlaintext.length(); i++) {
-			char c = passwordPlaintext.charAt(i);
-			for(PasswordCharacterRange range : PasswordCharacterRange.values()) {
-				if(range.contains(c)) {
-					ranges.add(range);
-					break;
-				}
-			}
-		}
-		
-		BigInteger rangeSize = new BigInteger("0");
-		for(PasswordCharacterRange range : ranges) {
-			rangeSize = rangeSize.add(new BigInteger(Long.toString(range.size())));
-		}
+		PasswordCharacterRange range = new PasswordCharacterRange(passwordPlaintext);
+		BigInteger rangeSize = new BigInteger(Long.toString(range.size()));
 		
 		// determine number of iterations required for brute force attack
 		// within this character range
@@ -91,32 +77,18 @@ public class PasswordStrengthMeter {
 		
 		for(int i = 1; i <= passwordPlaintext.length(); i++) {
 			int power = passwordPlaintext.length() - i;
-			long placeValue = getCharacterPositionInRangeSet(passwordPlaintext.charAt(i - 1), ranges);;
+			long placeValue = range.position(passwordPlaintext.codePointAt(i - 1));
 			
 			if(power == 0 && placeValue == 0) {
 				continue;
 			}
-			// 8 = 8 * 10^0, 80 = 8 * 10^1
+			
 			BigInteger multiplier = rangeSize.pow(power);
 			BigInteger iteration = new BigInteger(Long.toString(placeValue)).multiply(multiplier);
 			result = result.add(iteration);
 		}
 		
 		return result.add(new BigInteger("1"));
-	}
-	
-	private long getCharacterPositionInRangeSet(char character, TreeSet<PasswordCharacterRange> ranges) {
-		long position = 0;
-		
-		for(PasswordCharacterRange range : ranges) {
-			long rangePosition = range.position(character);
-			if(rangePosition < 0) {
-				position += range.size();
-			} else {
-				return position + rangePosition;
-			}
-		}
-		return -1;
 	}
 	
 	public static void main(String[] args) {
