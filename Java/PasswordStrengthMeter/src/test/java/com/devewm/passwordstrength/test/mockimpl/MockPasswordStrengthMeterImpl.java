@@ -7,7 +7,7 @@ import com.devewm.passwordstrength.PasswordStrengthMeter;
 public class MockPasswordStrengthMeterImpl extends PasswordStrengthMeter {
 	
 	@Override
-	public BigInteger check(String passwordPlaintext, boolean bypassLengthLimitCheck) {
+	public BigInteger iterationCount(String passwordPlaintext, boolean bypassLengthLimitCheck) {
 		return new BigInteger("-1");
 	}
 	

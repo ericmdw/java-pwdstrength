@@ -50,11 +50,24 @@ public class PasswordStrengthMeter {
 		return (PasswordStrengthMeter) impl;
 	}
 	
-	public BigInteger check(String passwordPlaintext) {
-		return check(passwordPlaintext, false);
+	public boolean satisfiesStrengthClass(String password, PasswordStrengthClass strengthClass) {
+		BigInteger iterationCount = null;
+		try {
+			iterationCount = iterationCount(password);
+		} catch(MaximumPasswordLengthExceededException lengthException) {
+			// length alone will make this password satisfy any
+			// standard PasswordStrengthClass
+			return true;
+		}
+		
+		return iterationCount.compareTo(strengthClass.getIterations()) >= 0;
 	}
 	
-	public BigInteger check(String passwordPlaintext, boolean bypassLengthLimitCheck) {
+	public BigInteger iterationCount(String passwordPlaintext) {
+		return iterationCount(passwordPlaintext, false);
+	}
+	
+	public BigInteger iterationCount(String passwordPlaintext, boolean bypassLengthLimitCheck) {
 		if(null == passwordPlaintext || passwordPlaintext.length() < 1) {
 			return new BigInteger("0");
 		}
@@ -106,7 +119,7 @@ public class PasswordStrengthMeter {
 		
 		DecimalFormat number = new DecimalFormat();
 		number.setGroupingUsed(true);
-		BigInteger result = passwordStrengthMeter.check(password.toString(), true);
+		BigInteger result = passwordStrengthMeter.iterationCount(password.toString(), true);
 		System.out.println(password + ": " + number.format(result));
 	}
 	
