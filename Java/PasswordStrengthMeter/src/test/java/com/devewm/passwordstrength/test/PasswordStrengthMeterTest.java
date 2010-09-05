@@ -15,7 +15,7 @@ import com.devewm.passwordstrength.PasswordStrengthClass;
 import com.devewm.passwordstrength.PasswordStrengthMeter;
 import com.devewm.passwordstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
 
-public class PasswordStrengthMeterTests {
+public class PasswordStrengthMeterTest {
 	
 	private PasswordStrengthMeter passwordStrengthMeter;
 	
