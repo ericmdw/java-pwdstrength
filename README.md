@@ -26,7 +26,7 @@ You can also get the number of iterations it would take to guess the given passw
     BigInteger result = passwordStrengthMeter.iterationCount("pAssword123");
 
 
-(Note that the iteration count assumes a naive, sequential approach to password generation. A brute force password utility may generate its guesses more effctively, i.e. by using statistical models or dictionary word lists, and so may be able to reach the password more quickly than the result indicates.)
+(Note that the iteration count assumes a naive, sequential approach to password generation. A brute force password utility may generate its guesses more effectively, i.e. by using statistical models or dictionary word lists, and so may be able to reach the password more quickly than the result indicates.)
 
 ## License
 This is free and unencumbered software released into the public domain.
