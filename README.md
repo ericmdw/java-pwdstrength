@@ -14,16 +14,17 @@ Get an instance of the `PasswordStrengthMeter` class and then use the `satisfies
 
 Example:
 
-`
-PasswordStrengthMeter passwordStrengthMeter = PasswordStrengthMeter.getInstance();
-boolean passwordSecure = passwordStrengthMeter.satisfiesStrengthClass("pAssword123", PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER);
-`
+
+    PasswordStrengthMeter passwordStrengthMeter = PasswordStrengthMeter.getInstance();
+    boolean passwordSecure = passwordStrengthMeter.satisfiesStrengthClass(
+        "pAssword123", PasswordStrengthClass.LENGTH_10_MIXED_CASE_WITH_NUMBER);
+
 
 You can also get the number of iterations it would take to guess the given password. Example:
 
-`
-BigInteger result = passwordStrengthMeter.iterationCount("pAssword123");
-`
+
+    BigInteger result = passwordStrengthMeter.iterationCount("pAssword123");
+
 
 (Note that the iteration count assumes a naive, sequential approach to password generation. A brute force password utility may generate its guesses more effctively, i.e. by using statistical models or dictionary word lists, and so may be able to reach the password more quickly than the result indicates.)
 
