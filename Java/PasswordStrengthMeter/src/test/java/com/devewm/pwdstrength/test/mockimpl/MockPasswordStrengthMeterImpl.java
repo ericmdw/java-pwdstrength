@@ -1,8 +1,8 @@
-package com.devewm.passwordstrength.test.mockimpl;
+package com.devewm.pwdstrength.test.mockimpl;
 
 import java.math.BigInteger;
 
-import com.devewm.passwordstrength.PasswordStrengthMeter;
+import com.devewm.pwdstrength.PasswordStrengthMeter;
 
 public class MockPasswordStrengthMeterImpl extends PasswordStrengthMeter {
 	

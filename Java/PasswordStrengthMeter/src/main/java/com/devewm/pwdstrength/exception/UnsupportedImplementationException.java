@@ -1,4 +1,4 @@
-package com.devewm.passwordstrength.exception;
+package com.devewm.pwdstrength.exception;
 
 public class UnsupportedImplementationException extends UnsupportedOperationException {
 	private static final long serialVersionUID = -5408905784921295827L;

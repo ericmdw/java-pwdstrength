@@ -1,12 +1,12 @@
-package com.devewm.passwordstrength;
+package com.devewm.pwdstrength;
 
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.devewm.passwordstrength.exception.MaximumPasswordLengthExceededException;
-import com.devewm.passwordstrength.exception.UnsupportedImplementationException;
+import com.devewm.pwdstrength.exception.MaximumPasswordLengthExceededException;
+import com.devewm.pwdstrength.exception.UnsupportedImplementationException;
 
 /**
  * @author eric

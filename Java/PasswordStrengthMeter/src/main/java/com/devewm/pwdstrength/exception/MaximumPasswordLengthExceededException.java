@@ -1,4 +1,4 @@
-package com.devewm.passwordstrength.exception;
+package com.devewm.pwdstrength.exception;
 
 public class MaximumPasswordLengthExceededException extends
 		UnsupportedOperationException {

@@ -1,4 +1,4 @@
-package com.devewm.passwordstrength;
+package com.devewm.pwdstrength;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package com.devewm.passwordstrength.test;
+package com.devewm.pwdstrength.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,10 +10,10 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.devewm.passwordstrength.PasswordCharacterRange;
-import com.devewm.passwordstrength.PasswordStrengthClass;
-import com.devewm.passwordstrength.PasswordStrengthMeter;
-import com.devewm.passwordstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
+import com.devewm.pwdstrength.PasswordCharacterRange;
+import com.devewm.pwdstrength.PasswordStrengthClass;
+import com.devewm.pwdstrength.PasswordStrengthMeter;
+import com.devewm.pwdstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
 
 public class PasswordStrengthMeterTest {
 	
