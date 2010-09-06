@@ -5,15 +5,32 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Defines ranges of associated characters across which a brute-force attack
- * could run.
- * @author eric
+ * <p>Defines the range of characters across which a brute-force attack
+ * would run for a given password. This is done by finding the unicode
+ * block for each character in the password and adding the block to
+ * a list. The password character range is the total range of all
+ * blocks found.</p>
+ * 
+ * <p>Note that the Basic Latin 1 block is sub-divided into
+ * lowercase and uppercase letters, numbers, symbols, and control
+ * characters for more granularity since differentiation within these
+ * areas is how most passwords are judged to be secure.</p>
  *
  */
 public class PasswordCharacterRange {
 	
+	/**
+	 * Stores the unicode blocks found for this password. Stored in
+	 * a TreeSet for consistent ordering regardless of what order
+	 * the blocks were found when processing the password.
+	 */
 	private TreeSet<CharacterBlock> characterClasses;
 	
+	/**
+	 * Constructor, builds the range by finding the unicode block for
+	 * each character and adding the block to <code>characterClasses</code>.
+	 * @param password The password to base this range on
+	 */
 	public PasswordCharacterRange(String password) {
 		characterClasses = new TreeSet<CharacterBlock>();
 		
@@ -26,6 +43,11 @@ public class PasswordCharacterRange {
 		}
 	}
 	
+	/**
+	 * Finds the unicode block for the given unicode codepoint and
+	 * adds the block to this range.
+	 * @param codePoint
+	 */
 	private void add(int codePoint) {
 		// check to see if the character is already covered. if so, ignore.
 		if(this.contains(codePoint)) {
@@ -40,6 +62,11 @@ public class PasswordCharacterRange {
 		}
 	}
 	
+	/**
+	 * Returns the total number of characters that occur in this
+	 * range.
+	 * @return the number of characters in this range.
+	 */
 	public long size() {
 		long result = 0;
 		for(CharacterBlock group : characterClasses) {
@@ -50,6 +77,12 @@ public class PasswordCharacterRange {
 		return result;
 	}
 	
+	/**
+	 * Check if the given unicode character codepoint would be included
+	 * in this range.
+	 * @param codePoint the unicode character codepoint to check
+	 * @return true if the codepoint falls within this range, false otherwise.
+	 */
 	private boolean contains(int codePoint) {
 		for(CharacterBlock group : characterClasses) {
 			for (Range range : group.getRanges()) {
@@ -61,6 +94,13 @@ public class PasswordCharacterRange {
 		return false;
 	}
 	
+	/**
+	 * Determines the position of the given unicode character codepoint
+	 * within the sequence of characters defined by this range.
+	 * @param codePoint the unicode character codepoint to find
+	 * @return the position of the given character within the
+	 * sequence defined by this range, or -1 if it is not found.
+	 */
 	public long position(int codePoint) {
 		long count = 0;
 		for(CharacterBlock group : characterClasses) {
@@ -76,6 +116,11 @@ public class PasswordCharacterRange {
 		return -1;
 	}
 	
+	/**
+	 * Helper class which defines a numerical range
+	 * by its lower and upper bounderies.
+	 *
+	 */
 	protected static class Range {
 		private int lowerBound, upperBound;
 		public Range(int lowerBound, int upperBound) {
@@ -92,6 +137,18 @@ public class PasswordCharacterRange {
 		}
 	}
 	
+	/**
+	 * Defines ranges of characters which roughly correspond to
+	 * the standard unicode blocks. There are several exceptions:
+	 * <ul>
+	 * <li>The basic latin block is subdivided into lowercase, uppercase, 
+	 * numbers, symbols, and control characters.</li>
+	 * <li>There were several gaps in the character ranges defined by 
+	 * the unicode spec. These have been filled by expanding the preceding 
+	 * block to cover the gap.</li>
+	 * </ul>
+	 *
+	 */
 	protected static enum CharacterBlock {
 		// Sources:
 		// 1. $ man ascii
@@ -319,6 +376,13 @@ public class PasswordCharacterRange {
 		
 		private Set<Range> ranges;
 		
+		/**
+		 * Constructor which builds the block from an array of ranges.
+		 * A block can consist of multiple ranges to cover cases like
+		 * non-alphanumeric symbols in the basic latin block which are
+		 * spread out between the numbers and upper and lower case letters.
+		 * @param ranges the ranges which together form this character block
+		 */
 		private CharacterBlock(Range... ranges) {
 			this.ranges = new HashSet<Range>();
 			for(Range range : ranges) {
@@ -327,6 +391,12 @@ public class PasswordCharacterRange {
 			
 		}
 		
+		/**
+		 * Check if the given unicode character codepoint falls
+		 * within this character block
+		 * @param codePoint the unicode character codepoint to find
+		 * @return true if the character falls in this block, false otherwise
+		 */
 		public boolean contains(int codePoint) {
 			for(Range range : this.ranges) {
 				if(codePoint >= range.getLowerBound() && codePoint <= range.getUpperBound()) {
@@ -337,6 +407,10 @@ public class PasswordCharacterRange {
 			return false;
 		}
 		
+		/**
+		 * Get the set of numerical ranges making up this character block
+		 * @return the ranges which make up this character block
+		 */
 		public Set<Range> getRanges() {
 			return this.ranges;
 		}
