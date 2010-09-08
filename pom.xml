@@ -5,9 +5,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Password Strength Meter</name>
 	<scm>
-		<connection>scm:git:git@github.com:devewm/java-pwdstrength.git</connection>
-		<url>scm:git:git@github.com:devewm/java-pwdstrength.git</url>
-		<developerConnection>scm:git:git@github.com:devewm/java-pwdstrength.git</developerConnection>	
+		<connection>scm:git:git://git@github.com/devewm/java-pwdstrength.git</connection>
+		<developerConnection>scm:git:git://git@github.com/devewm/java-pwdstrength.git</developerConnection>	
 	</scm>
 	<description>Provides a common way to determine the strength of a given password, making mandatory length / symbol / number / capital / lower-case requirements unnecessary and obsolete.</description>
 	<build>
