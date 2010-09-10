@@ -76,7 +76,7 @@ public class PasswordCharacterRange {
 		return -1;
 	}
 	
-	private static class Range {
+	protected static class Range {
 		private int lowerBound, upperBound;
 		public Range(int lowerBound, int upperBound) {
 			this.lowerBound = lowerBound;
@@ -92,7 +92,7 @@ public class PasswordCharacterRange {
 		}
 	}
 	
-	private static enum CharacterBlock {
+	protected static enum CharacterBlock {
 		// Sources:
 		// 1. $ man ascii
 		// 2. http://www.unicode.org/Public/UNIDATA/Blocks.txt

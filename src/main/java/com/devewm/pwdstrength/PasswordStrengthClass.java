@@ -1,44 +1,51 @@
 package com.devewm.pwdstrength;
 
+import static com.devewm.pwdstrength.PasswordCharacterRange.CharacterBlock.BASIC_LATIN_LETTERS_LOWER_CASE;
+import static com.devewm.pwdstrength.PasswordCharacterRange.CharacterBlock.BASIC_LATIN_LETTERS_UPPER_CASE;
+import static com.devewm.pwdstrength.PasswordCharacterRange.CharacterBlock.BASIC_LATIN_NUMERICAL_DIGITS;
+import static com.devewm.pwdstrength.PasswordCharacterRange.CharacterBlock.BASIC_LATIN_SYMBOLS;
+
 import java.math.BigInteger;
 
 public enum PasswordStrengthClass implements Comparable<PasswordStrengthClass> {
-	LENGTH_8_LOWER_CASE(8, 97, 122, new char[]{}),
-	LENGTH_8_MIXED_CASE(8, 65, 122, new char[] { 'a' }),
-	LENGTH_8_MIXED_CASE_WITH_NUMBER(8, 48, 122, new char[] { 'a', 'A' }),
-	LENGTH_8_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(8, 32, 122, new char[] { 'a', 'A', '0' }),
+	LENGTH_8_LOWER_CASE(8, BASIC_LATIN_LETTERS_LOWER_CASE),
+	LENGTH_8_MIXED_CASE(8, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE),
+	LENGTH_8_MIXED_CASE_WITH_NUMBER(8, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS),
+	LENGTH_8_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(8, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS, BASIC_LATIN_SYMBOLS),
 	
-	LENGTH_10_LOWER_CASE(10, 97, 122, new char[]{}),
-	LENGTH_10_MIXED_CASE(10, 65, 122, new char[] { 'a' }),
-	LENGTH_10_MIXED_CASE_WITH_NUMBER(10, 48, 122, new char[] { 'a', 'A' }),
-	LENGTH_10_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(10, 32, 122, new char[] { 'a', 'A', '0' }),
+	LENGTH_10_LOWER_CASE(10, BASIC_LATIN_LETTERS_LOWER_CASE),
+	LENGTH_10_MIXED_CASE(10, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE),
+	LENGTH_10_MIXED_CASE_WITH_NUMBER(10, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS),
+	LENGTH_10_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(10, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS, BASIC_LATIN_SYMBOLS),
 	
-	LENGTH_12_LOWER_CASE(12, 97, 122, new char[]{}),
-	LENGTH_12_MIXED_CASE(12, 65, 122, new char[] { 'a' }),
-	LENGTH_12_MIXED_CASE_WITH_NUMBER(12, 48, 122, new char[] { 'a', 'A' }),
-	LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(12, 32, 122, new char[] { 'a', 'A', '0' }),
+	LENGTH_12_LOWER_CASE(12, BASIC_LATIN_LETTERS_LOWER_CASE),
+	LENGTH_12_MIXED_CASE(12, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE),
+	LENGTH_12_MIXED_CASE_WITH_NUMBER(12, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS),
+	LENGTH_12_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(12, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS, BASIC_LATIN_SYMBOLS),
 	
-	LENGTH_16_LOWER_CASE(16, 97, 122, new char[]{}),
-	LENGTH_16_MIXED_CASE(16, 65, 122, new char[] { 'a' }),
-	LENGTH_16_MIXED_CASE_WITH_NUMBER(16, 48, 122, new char[] { 'a', 'A' }),
-	LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(16, 32, 122, new char[] { 'a', 'A', '0' });
+	LENGTH_16_LOWER_CASE(16, BASIC_LATIN_LETTERS_LOWER_CASE),
+	LENGTH_16_MIXED_CASE(16, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE),
+	LENGTH_16_MIXED_CASE_WITH_NUMBER(16, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS),
+	LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(16, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS, BASIC_LATIN_SYMBOLS);
 	
 	
 	private BigInteger iterationCount;
 	
-	private PasswordStrengthClass(int length, int lowerBound, int upperBound, char[] required) {
+	private PasswordStrengthClass(int length, PasswordCharacterRange.CharacterBlock... blocks) {
 		StringBuffer basePassword = new StringBuffer();
 		
-		for(char c : required) {
-			basePassword.append(c);
+		char[] initialChars = Character.toChars(blocks[0].getRanges().iterator().next().getLowerBound());
+		for(int i = 0; i < ((length - blocks.length) + 1); i++) {
+			basePassword.append(initialChars);
 		}
 		
-		for(int i = 0; i < length - required.length; i++) {
-			basePassword.append((char) lowerBound);
+		for(int i = 1; i < blocks.length; i++) {
+			char[] nextChars = Character.toChars(blocks[i].getRanges().iterator().next().getLowerBound());
+			basePassword.append(nextChars);
 		}
 		
 		PasswordStrengthMeter passwordStrengthMeter = PasswordStrengthMeter.getInstance();
-		this.iterationCount = passwordStrengthMeter.iterationCount(basePassword.reverse().toString(), false);
+		this.iterationCount = passwordStrengthMeter.iterationCount(basePassword.toString(), false);
 	}
 	
 	public BigInteger getIterations() {
