@@ -118,7 +118,7 @@ public class PasswordCharacterRange {
 	
 	/**
 	 * Helper class which defines a numerical range
-	 * by its lower and upper bounderies.
+	 * by its lower and upper boundaries.
 	 *
 	 */
 	protected static class Range {
