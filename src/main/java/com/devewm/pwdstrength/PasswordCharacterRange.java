@@ -19,6 +19,8 @@ import java.util.TreeSet;
  */
 public class PasswordCharacterRange {
 	
+	private static int[] lowerBounds;
+	
 	/**
 	 * Stores the unicode blocks found for this password. Stored in
 	 * a TreeSet for consistent ordering regardless of what order
@@ -32,6 +34,7 @@ public class PasswordCharacterRange {
 	 * @param password The password to base this range on
 	 */
 	public PasswordCharacterRange(String password) {
+		
 		characterClasses = new TreeSet<CharacterBlock>();
 		
 		if(null == password) {
@@ -52,6 +55,32 @@ public class PasswordCharacterRange {
 		// check to see if the character is already covered. if so, ignore.
 		if(this.contains(codePoint)) {
 			return;
+		}
+		
+		if(codePoint <= 127) {
+			if(codePoint <= 31) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_CONTROL_CHARACTERS);
+			} else if(codePoint < 48) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_SYMBOLS);
+			} else if(codePoint < 58) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_NUMERICAL_DIGITS);
+			} else if(codePoint < 65) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_SYMBOLS);
+			} else if(codePoint < 91) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_LETTERS_UPPER_CASE);
+			} else if(codePoint < 97) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_SYMBOLS);
+			} else if(codePoint < 123) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_LETTERS_LOWER_CASE);
+			} else if(codePoint < 128) {
+				this.characterClasses.add(CharacterBlock.BASIC_LATIN_SYMBOLS);
+			}
+			
+			return;
+		}
+		
+		if(lowerBounds.length < 1) {
+//			initLowerBounds();
 		}
 		
 		for(CharacterBlock group : CharacterBlock.values()) {
