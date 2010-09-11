@@ -9,7 +9,14 @@ import com.devewm.pwdstrength.exception.MaximumPasswordLengthExceededException;
 import com.devewm.pwdstrength.exception.UnsupportedImplementationException;
 
 /**
- * @author eric
+ * <p>The main class which does the work of calculating password strength.</p>
+ * <p>Password strength is calculated by simulating a sequential brute-force attack on a given password. For example, to compute the strength of <em>abc</em>, it would first try every possible 1-letter password and then every possible 2-letter password. Once reaching three letter passwords, it would start by trying <em>aaa</em>, then <em>aab</em> and so on until reaching <em>aaz</em>. At this point the next letter to the left increments to the next value and the final letter starts back at the beginning; the next password checked is <em>aba</em>. This process continues until the password is found.</p>
+ * <p>The range of characters checked is determined by scanning the password's characters to see what unicode character blocks they fall in. All the occuring blocks will then be scanned during the simulated brute-force attack. For instance, if a password contains a single character in the cyrillic unicode block, all characters in that block will be checked when running the attack iteration count. (The Basic_Latin block has been subdivided into lowercase letters, uppercase letters, numbers, symbols, and control characters.)</p>
+ * <p>With this approach, the method for counting the sequential brute-force iterations can be expressed mathematically as:
+ * given <em>R</em> is the number of characters which could occur in the password; <em>L</em> is the length of the password; <em>P[n]</em> is the 0-based index of the <em>n</em>th character of the password in the range of possible characters; then<br/>
+ * iterations = <em>(R^1 + R^2 + ... + R^(L-1)) + { P[0](R^(L-0)) + P[1](R^(L-1)) + ... + P[L-1](R^(L-L)) }</em>
+ * </p>
+ * <p>This class cannot be instantiated; to use it, get an instance of the class by calling the static <code>getInstance()</code> method. Subclasses should override <code>getInstance()</code> to provide a singleton instance of the appropriate type. The <code>getInstance(Class type)</code> method is provided as a convenience to access singleton instances of subtypes when applicable.</p>
  *
  */
 public class PasswordStrengthMeter {

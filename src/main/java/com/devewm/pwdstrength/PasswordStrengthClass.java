@@ -7,6 +7,10 @@ import static com.devewm.pwdstrength.PasswordCharacterRange.CharacterBlock.BASIC
 
 import java.math.BigInteger;
 
+/**
+ * Contains values for commonly-used password types.
+ *
+ */
 public enum PasswordStrengthClass implements Comparable<PasswordStrengthClass> {
 	LENGTH_8_LOWER_CASE(8, BASIC_LATIN_LETTERS_LOWER_CASE),
 	LENGTH_8_MIXED_CASE(8, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE),
@@ -28,7 +32,6 @@ public enum PasswordStrengthClass implements Comparable<PasswordStrengthClass> {
 	LENGTH_16_MIXED_CASE_WITH_NUMBER(16, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS),
 	LENGTH_16_MIXED_CASE_WITH_NUMBER_AND_SYMBOL(16, BASIC_LATIN_LETTERS_LOWER_CASE, BASIC_LATIN_LETTERS_UPPER_CASE, BASIC_LATIN_NUMERICAL_DIGITS, BASIC_LATIN_SYMBOLS);
 	
-	
 	private BigInteger iterationCount;
 	
 	private PasswordStrengthClass(int length, PasswordCharacterRange.CharacterBlock... blocks) {
@@ -48,6 +51,10 @@ public enum PasswordStrengthClass implements Comparable<PasswordStrengthClass> {
 		this.iterationCount = passwordStrengthMeter.iterationCount(basePassword.toString(), false);
 	}
 	
+	/**
+	 * Find the minimum iteration count for a password of this type
+	 * @return iteration count for the simplest password matching this description
+	 */
 	public BigInteger getIterations() {
 		return this.iterationCount;
 	}
