@@ -88,7 +88,7 @@ public class PasswordStrengthMeterTest {
 		result = passwordStrengthMeter.iterationCount(password, false);
 		assertEquals(new BigInteger("703"), result);
 		
-		// (36^2 + 36^1) + 26*(36^0) + 1 = 1359
+		// 26^2 + 26^1 + 1
 		password = "AAA";
 		result = passwordStrengthMeter.iterationCount(password, false);
 		assertEquals(new BigInteger("703"), result);
