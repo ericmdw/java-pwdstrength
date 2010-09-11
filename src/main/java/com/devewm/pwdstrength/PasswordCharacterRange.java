@@ -19,7 +19,7 @@ import java.util.TreeSet;
  */
 public class PasswordCharacterRange {
 	
-	private static int[] lowerBounds;
+	private static int[] lowerBounds = new int[0];
 	
 	/**
 	 * Stores the unicode blocks found for this password. Stored in
@@ -80,7 +80,7 @@ public class PasswordCharacterRange {
 		}
 		
 		if(lowerBounds.length < 1) {
-//			initLowerBounds();
+			initLowerBounds();
 		}
 		
 		for(CharacterBlock group : CharacterBlock.values()) {
@@ -91,6 +91,14 @@ public class PasswordCharacterRange {
 		}
 	}
 	
+	private void initLowerBounds() {
+		this.lowerBounds = new int[CharacterBlock.values().length];
+//		for(int i = 0; i < lowerBounds.length; i++) {
+//			if(CharacterBlock.Basic)
+//			lowerBounds[i] = CharacterBlock.values()[i].getRanges().iterator().next().lowerBound;
+//		}
+	}
+
 	/**
 	 * Returns the total number of characters that occur in this
 	 * range.
