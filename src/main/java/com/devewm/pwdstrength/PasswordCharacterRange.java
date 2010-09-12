@@ -164,7 +164,7 @@ public class PasswordCharacterRange {
 				new Range(0x20, 0x2f),
 				new Range(0x3a, 0x40),
 				new Range(0x5b, 0x60),
-				new Range(0x7b, 0x7f)),
+				new Range(0x7b, 0x7e)),
 		
 		BASIC_LATIN_CONTROL_CHARACTERS(
 				new Range(0x0, 0x1f), 
@@ -186,8 +186,8 @@ public class PasswordCharacterRange {
 		ARABIC_SUPPLEMENT(new Range(0x0750, 0x077F)),
 		THAANA(new Range(0x0780, 0x07BF)),
 		NKO(new Range(0x07C0, 0x07FF)),
-//		SAMARITAN(new Range(0x0800, 0x083F)), // actual "correct" range, removing gap below
-		SAMARITAN(new Range(0x0800, 0x08FF)),
+		SAMARITAN(new Range(0x0800, 0x083F)),
+		// GAP HERE
 		DEVANAGARI(new Range(0x0900, 0x097F)),
 		BENGALI(new Range(0x0980, 0x09FF)),
 		GURMUKHI(new Range(0x0A00, 0x0A7F)),
@@ -222,14 +222,14 @@ public class PasswordCharacterRange {
 		NEW_TAI_LUE(new Range(0x1980, 0x19DF)),
 		KHMER_SYMBOLS(new Range(0x19E0, 0x19FF)),
 		BUGINESE(new Range(0x1A00, 0x1A1F)),
-//		TAI_THAM(new Range(0x1A20, 0x1AAF)), // actual "correct value", fudging to fill gap below
-		TAI_THAM(new Range(0x1A20, 0x1AFF)),
+		TAI_THAM(new Range(0x1A20, 0x1AAF)),
+		// GAP HERE
 		BALINESE(new Range(0x1B00, 0x1B7F)),
-//		SUNDANESE(new Range(0x1B80, 0x1BBF)), // actual "correct value", fudging to fill gap below
-		SUNDANESE(new Range(0x1B80, 0x1BFF)),
+		SUNDANESE(new Range(0x1B80, 0x1BBF)), 
+		// GAP HERE
 		LEPCHA(new Range(0x1C00, 0x1C4F)),
-//		OL_CHIKI(new Range(0x1C50, 0x1C7F)), // actual "correct value", fudging to fill gap below
-		OL_CHIKI(new Range(0x1C50, 0x1CCF)),
+		OL_CHIKI(new Range(0x1C50, 0x1C7F)),
+		// GAP HERE
 		VEDIC_EXTENSIONS(new Range(0x1CD0, 0x1CFF)),
 		PHONETIC_EXTENSIONS(new Range(0x1D00, 0x1D7F)),
 		PHONETIC_EXTENSIONS_SUPPLEMENT(new Range(0x1D80, 0x1DBF)),
@@ -269,8 +269,8 @@ public class PasswordCharacterRange {
 		CYRILLIC_EXTENDED_A(new Range(0x2DE0, 0x2DFF)),
 		SUPPLEMENTAL_PUNCTUATION(new Range(0x2E00, 0x2E7F)),
 		CJK_RADICALS_SUPPLEMENT(new Range(0x2E80, 0x2EFF)),
-		//KANGXI_RADICALS(new Range(0x2F00, 0x2FDF)), // actual "correct value", fudging to fill gap below
-		KANGXI_RADICALS(new Range(0x2F00, 0x2FEF)),
+		KANGXI_RADICALS(new Range(0x2F00, 0x2FDF)),
+		// GAP HERE
 		IDEOGRAPHIC_DESCRIPTION_CHARACTERS(new Range(0x2FF0, 0x2FFF)),
 		CJK_SYMBOLS_AND_PUNCTUATION(new Range(0x3000, 0x303F)),
 		HIRAGANA(new Range(0x3040, 0x309F)),
@@ -302,12 +302,12 @@ public class PasswordCharacterRange {
 		KAYAH_LI(new Range(0xA900, 0xA92F)),
 		REJANG(new Range(0xA930, 0xA95F)),
 		HANGUL_JAMO_EXTENDED_A(new Range(0xA960, 0xA97F)),
-//		JAVANESE(new Range(0xA980, 0xA9DF)), // actual "correct value", fudging to fill gap below
-		JAVANESE(new Range(0xA980, 0xA9FF)),
+		JAVANESE(new Range(0xA980, 0xA9DF)),
+		// GAP HERE
 		CHAM(new Range(0xAA00, 0xAA5F)),
 		MYANMAR_EXTENDED_A(new Range(0xAA60, 0xAA7F)),
-//		TAI_VIET(new Range(0xAA80, 0xAADF)), // actual "correct value", fudging to fill gap below
-		TAI_VIET(new Range(0xAA80, 0xABBF)),
+		TAI_VIET(new Range(0xAA80, 0xAADF)),
+		// GAP HERE
 		MEETEI_MAYEK(new Range(0xABC0, 0xABFF)),
 		HANGUL_SYLLABLES(new Range(0xAC00, 0xD7AF)),
 		HANGUL_JAMO_EXTENDED_B(new Range(0xD7B0, 0xD7FF)),
@@ -332,47 +332,104 @@ public class PasswordCharacterRange {
 		ANCIENT_GREEK_NUMBERS(new Range(0x10140, 0x1018F)),
 		ANCIENT_SYMBOLS(new Range(0x10190, 0x101CF)),
 		PHAISTOS_DISC(new Range(0x101D0, 0x101FF)),
+		// GAP HERE
 		LYCIAN(new Range(0x10280, 0x1029F)),
 		CARIAN(new Range(0x102A0, 0x102DF)),
+		// GAP HERE
 		OLD_ITALIC(new Range(0x10300, 0x1032F)),
 		GOTHIC(new Range(0x10330, 0x1034F)),
+		// GAP HERE
 		UGARITIC(new Range(0x10380, 0x1039F)),
 		OLD_PERSIAN(new Range(0x103A0, 0x103DF)),
+		// GAP HERE
 		DESERET(new Range(0x10400, 0x1044F)),
 		SHAVIAN(new Range(0x10450, 0x1047F)),
 		OSMANYA(new Range(0x10480, 0x104AF)),
+		// GAP HERE
 		CYPRIOT_SYLLABARY(new Range(0x10800, 0x1083F)),
 		IMPERIAL_ARAMAIC(new Range(0x10840, 0x1085F)),
+		// GAP HERE
 		PHOENICIAN(new Range(0x10900, 0x1091F)),
 		LYDIAN(new Range(0x10920, 0x1093F)),
+		// GAP HERE
 		KHAROSHTHI(new Range(0x10A00, 0x10A5F)),
 		OLD_SOUTH_ARABIAN(new Range(0x10A60, 0x10A7F)),
+		// GAP
 		AVESTAN(new Range(0x10B00, 0x10B3F)),
 		INSCRIPTIONAL_PARTHIAN(new Range(0x10B40, 0x10B5F)),
 		INSCRIPTIONAL_PAHLAVI(new Range(0x10B60, 0x10B7F)),
+		// GAP HERE
 		OLD_TURKIC(new Range(0x10C00, 0x10C4F)),
+		// GAP HERE
 		RUMI_NUMERAL_SYMBOLS(new Range(0x10E60, 0x10E7F)),
+		// GAP HERE
 		KAITHI(new Range(0x11080, 0x110CF)),
+		// GAP HERE
 		CUNEIFORM(new Range(0x12000, 0x123FF)),
 		CUNEIFORM_NUMBERS_AND_PUNCTUATION(new Range(0x12400, 0x1247F)),
+		// GAP HERE
 		EGYPTIAN_HIEROGLYPHS(new Range(0x13000, 0x1342F)),
+		// GAP HERE
 		BYZANTINE_MUSICAL_SYMBOLS(new Range(0x1D000, 0x1D0FF)),
 		MUSICAL_SYMBOLS(new Range(0x1D100, 0x1D1FF)),
 		ANCIENT_GREEK_MUSICAL_NOTATION(new Range(0x1D200, 0x1D24F)),
+		// GAP HERE
 		TAI_XUAN_JING_SYMBOLS(new Range(0x1D300, 0x1D35F)),
 		COUNTING_ROD_NUMERALS(new Range(0x1D360, 0x1D37F)),
+		// GAP HERE
 		MATHEMATICAL_ALPHANUMERIC_SYMBOLS(new Range(0x1D400, 0x1D7FF)),
+		// GAP HERE
 		MAHJONG_TILES(new Range(0x1F000, 0x1F02F)),
 		DOMINO_TILES(new Range(0x1F030, 0x1F09F)),
+		// GAP HERE
 		ENCLOSED_ALPHANUMERIC_SUPPLEMENT(new Range(0x1F100, 0x1F1FF)),
 		ENCLOSED_IDEOGRAPHIC_SUPPLEMENT(new Range(0x1F200, 0x1F2FF)),
+		// GAP HERE
 		CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B(new Range(0x20000, 0x2A6DF)),
+		// GAP HERE
 		CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C(new Range(0x2A700, 0x2B73F)),
+		// GAP HERE
 		CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT(new Range(0x2F800, 0x2FA1F)),
+		// GAP HERE
 		TAGS(new Range(0xE0000, 0xE007F)),
+		// GAP HERE
 		VARIATION_SELECTORS_SUPPLEMENT(new Range(0xE0100, 0xE01EF)),
+		// GAP HERE
 		SUPPLEMENTARY_PRIVATE_USE_AREA_A(new Range(0xF0000, 0xFFFFF)),
-		SUPPLEMENTARY_PRIVATE_USE_AREA_B(new Range(0x100000, 0x10FFFF));
+		SUPPLEMENTARY_PRIVATE_USE_AREA_B(new Range(0x100000, 0x10FFFF)),
+		
+		_UNUSED(
+				new Range(0x0840, 0x8FF),    // between SAMARITAN and DEVANAGARI
+				new Range(0x1AB0, 0x1AFF),   // between TAI_TAM and BALINESE)
+				new Range(0x1BC0, 0x1BFF),   // between SUDANESE and LEPCHA
+				new Range(0x1C80, 0x1CCF),   // between OL_CHIKI and VEDIC_EXTENSIONS
+				new Range(0x2FE0, 0x2FEF),   // between KANGXI_RADICALS and IDEOGRAPHIC_DESCRIPTION_CHARACTERS
+				new Range(0xA9E0, 0xA9FF),   // between JAVANESE and CHAM
+				new Range(0xAAE0, 0xABBF),   // between TAI_VIET and MEETEI_MAYEK
+				new Range(0x10200, 0x1027F), // between PHAISTOS_DISC and LYCIAN
+				new Range(0x102E0, 0x102FF), // between CARIAN and OLD_ITALIC
+				new Range(0x10350, 0x1037F), // between GOTHIC and UGARITIC
+				new Range(0x103E0, 0x103FF), // between OLD_PERSIAN and DESERET
+				new Range(0x104B0, 0x107FF), // between OSMANYA and CYPRIOT_SYLLABARY
+				new Range(0x10860, 0x108FF), // between IMPERIAL_ARAMAIC and PHOENICIAN
+				new Range(0x10940, 0x109FF), // between LYDIAN and KHAROSHTHI
+				new Range(0x10A80, 0x10AFF), // between OLD_SOUTH_ARABIAN and AVESTAN
+				new Range(0x10B80, 0x10BFF), // between INSCRIPTIONAL_PAHLAVI and OLD_TURKIC
+				new Range(0x10C50, 0x10E5F), // between OLD_TURKIC and RUMI_NUMERAL_SYMBOLS
+				new Range(0x10E80, 0x1107F), // between RUMI_NUMERAL_SYMBOLS and KAITHI
+				new Range(0x110D0, 0x11FFF), // between KAITHI and CUNEIFORM
+				new Range(0x12480, 0x12FFF), // between CUNEIFORM_NUMBERS_AND_PUNCTUATION and EGYPTIAN_HIEROGLYPHS
+				new Range(0x13430, 0x1CFFF), // between EGYPTIAN_HIEROGLYPHS and BYZANTINE_MUSICAL_SYMBOLS
+				new Range(0x1D250, 0x1D2FF), // between ANCIENT_GREEK_MUSICAL_NOTATION and TAI_XUAN_JING_SYMBOLS
+				new Range(0x1D380, 0x1D3FF), // between COUNTING_ROD_NUMERALS and MATHEMATICAL_ALPHANUMERIC_SYMBOLS
+				new Range(0x1D800, 0x1EFFF), // between MATHEMATICAL_ALPHANUMERIC_SYMBOLS and MAHJONG_TILES
+				new Range(0x1F0a0, 0x1F0FF), // between DOMINO_TILES and ENCLOSED_ALPHANUMERIC_SUPPLEMENT
+				new Range(0x1F300, 0x1FFFF), // between ENCLOSED_IDEOGRAPHIC_SUPPLEMENT and CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+				new Range(0x2a6e0, 0x2a6FF), // between CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B and CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C
+				new Range(0x2B740, 0x2F7FF), // between CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C and CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT
+				new Range(0xE0080, 0xE00FF), // between TAGS and VARIATION_SELECTORS_SUPPLEMENT
+				new Range(0x2FA20, 0xDFFFF), // between CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT and TAGS
+				new Range(0xE01F0, 0xEFFFF));// between VARIATION_SELECTORS_SUPPLEMENT and SUPPLEMENTARY_PRIVATE_USE_AREA_A
 		
 		private Set<Range> ranges;
 		
