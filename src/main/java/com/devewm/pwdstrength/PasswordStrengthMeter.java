@@ -1,6 +1,8 @@
 package com.devewm.pwdstrength;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,12 +153,21 @@ public class PasswordStrengthMeter {
 		
 		// determine number of iterations required for brute force attack
 		// within this character range
-		BigInteger result = new BigInteger("0");
+		BigInteger result;
 		
-		for(int i = 1; i < passwordPlaintext.length(); i++) {
-			BigInteger iteration = rangeSize.pow(i);
-			result = result.add(iteration);
-		}
+		BigInteger partialSumInner = 
+			rangeSize.pow(Character.codePointCount(passwordPlaintext, 0, passwordPlaintext.length() - 1))
+			.subtract(new BigInteger("1"));
+		
+		BigDecimal partialSumMultiplier = new BigDecimal(range.size());
+		partialSumMultiplier = partialSumMultiplier.divide(partialSumMultiplier.subtract(new BigDecimal("1")), 512, RoundingMode.HALF_EVEN);
+		BigDecimal partialSumResult = partialSumMultiplier.multiply(new BigDecimal(partialSumInner));
+		result = partialSumResult.toBigInteger();
+		
+//		for(int i = 1; i < passwordPlaintext.length(); i++) {
+//			BigInteger iteration = rangeSize.pow(i);
+//			result = result.add(iteration);
+//		}
 		
 		for(int i = 1; i <= passwordPlaintext.length(); i++) {
 			int power = passwordPlaintext.length() - i;
