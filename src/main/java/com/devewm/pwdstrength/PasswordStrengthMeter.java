@@ -1,6 +1,9 @@
 package com.devewm.pwdstrength;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +30,8 @@ public class PasswordStrengthMeter {
 	 * <code>bypassLengthLimitCheck</code> parameter.
 	 */
 	public static final int PASSWORD_LENGTH_LIMIT = 256;
+	private static final int BIG_DECIMAL_SCALE = 4096;
+	private static final MathContext roundingContext = new MathContext(8, RoundingMode.HALF_UP);
 	
 	/**
 	 * Implementation instance cache to assist this and subclasses with
@@ -142,7 +147,8 @@ public class PasswordStrengthMeter {
 			return new BigInteger("0");
 		}
 		
-		if(!bypassLengthLimitCheck && Character.codePointCount(passwordPlaintext, 0, passwordPlaintext.length()) > PASSWORD_LENGTH_LIMIT) {
+		int passwordLength = Character.codePointCount(passwordPlaintext, 0, passwordPlaintext.length());
+		if(!bypassLengthLimitCheck && passwordLength > PASSWORD_LENGTH_LIMIT) {
 			throw new MaximumPasswordLengthExceededException();
 		}
 		
@@ -151,14 +157,29 @@ public class PasswordStrengthMeter {
 		
 		// determine number of iterations required for brute force attack
 		// within this character range
-		BigInteger result = new BigInteger("0");
+		BigInteger result;
 		
-		for(int i = 1; i < passwordPlaintext.length(); i++) {
-			BigInteger iteration = rangeSize.pow(i);
-			result = result.add(iteration);
-		}
+		BigInteger partialSumInner = rangeSize.pow(passwordLength - 1).subtract(new BigInteger("1"));
 		
-		for(int i = 1; i <= passwordPlaintext.length(); i++) {
+		BigDecimal partialSumMultiplier = new BigDecimal(range.size());
+		partialSumMultiplier = partialSumMultiplier.divide(partialSumMultiplier.subtract(new BigDecimal("1")), BIG_DECIMAL_SCALE, RoundingMode.HALF_UP);
+		BigDecimal partialSumResult = partialSumMultiplier.multiply(new BigDecimal(partialSumInner));
+		result = partialSumResult.setScale(0, RoundingMode.HALF_UP).toBigIntegerExact();
+		
+//		BigInteger slowResult = new BigInteger("0");
+//		for(int i = 1; i < passwordLength; i++) {
+//			BigInteger iteration = rangeSize.pow(i);
+//			slowResult = slowResult.add(iteration);
+//		}
+//		
+//		boolean resultsMatch = result.compareTo(slowResult) == 0;
+////		result = slowResult;
+//		if(!resultsMatch) {
+//			System.out.println("Values didn't match on password with length " + passwordLength + ". Terminating.");
+//			System.exit(1);
+//		}
+		
+		for(int i = 1; i <= passwordLength; i++) {
 			int power = passwordPlaintext.length() - i;
 			long placeValue = range.position(passwordPlaintext.codePointAt(i - 1));
 			
