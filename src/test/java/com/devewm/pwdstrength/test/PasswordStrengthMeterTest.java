@@ -326,20 +326,4 @@ public class PasswordStrengthMeterTest {
 		assertTrue(defaultMeter != customSingletonMeter);
 		assertTrue(customSingletonMeter == customSingletonMeter2);
 	}
-	
-	@Test
-	public void characterRanges() {
-		for(int i = 0; i <= Character.MAX_CODE_POINT; i++) {
-			char[] codePointChars = Character.toChars(i);
-			String password = new String(codePointChars);
-			if(codePointChars.length > 1) {
-				assertTrue(Character.codePointCount(password, 0, password.length()) == 1);
-			}
-			
-			assertTrue(Character.isValidCodePoint(i));
-			
-			PasswordCharacterRange range = new PasswordCharacterRange(password);
-			assertTrue(i + " is a valid codepoint in a known unicode block", range.size() > 0);
-		}
-	}
 }
