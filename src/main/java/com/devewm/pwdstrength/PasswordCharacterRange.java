@@ -1,6 +1,7 @@
 package com.devewm.pwdstrength;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,6 +19,9 @@ import java.util.TreeSet;
  *
  */
 public class PasswordCharacterRange {
+	
+	private static int[] lowerBounds = new int[0];
+	private static int[] upperBounds = new int[0];
 	
 	/**
 	 * Stores the unicode blocks found for this password. Stored in
@@ -39,11 +43,31 @@ public class PasswordCharacterRange {
 			return;
 		}
 		
+		if(lowerBounds.length < 1) {
+			initBoundsArrays();
+		}
+		
 		for(int i = 0; i < password.length(); i++) {
 			this.add(password.codePointAt(i));
 		}
 	}
 	
+	private void initBoundsArrays() {
+		lowerBounds = new int[CharacterBlock.values().length];
+		upperBounds = new int[CharacterBlock.values().length];
+		
+		for(CharacterBlock block : CharacterBlock.values()) {
+			int index = block.ordinal();
+			Iterator<Range> i = block.ranges.iterator();
+			Range range = i.next();
+			lowerBounds[index] = range.getLowerBound();
+			while(i.hasNext()) {
+				range = i.next();
+			}
+			upperBounds[index] = range.getUpperBound();
+		}
+	}
+
 	/**
 	 * Finds the unicode block for the given unicode codepoint and
 	 * adds the block to this range.
@@ -55,11 +79,11 @@ public class PasswordCharacterRange {
 			return;
 		}
 		
-		CharacterBlock[] groups = CharacterBlock.values();
+		CharacterBlock[] blocks = CharacterBlock.values();
 		
-		if(codePoint < 0x100) {
-			for(int i = 0; i < groups.length; i++) {
-				CharacterBlock group = groups[i];
+		if(codePoint < 0x10000) {
+			for(int i = 0; i < blocks.length; i++) {
+				CharacterBlock group = blocks[i];
 				if(group.contains(codePoint)) {
 					this.characterClasses.add(group);
 					return;
@@ -76,34 +100,25 @@ public class PasswordCharacterRange {
 			// binary search
 			int min = CharacterBlock.LATIN_EXTENDED_A.ordinal();
 			int max = CharacterBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ordinal();
-			int guess = (int) (Math.round((max - min) / 2.0)) + min;
-			
-			int searchIterations = 0;
+			int guess = (int) (Math.floor((max - min) / 2.0)) + min;
+			int lastGuess = -1;
 			while(true) {
-				searchIterations++;
-				CharacterBlock guessedGroup = groups[guess];
-				if(guessedGroup.contains(codePoint)) {
-					characterClasses.add(groups[guess]);
+				if(upperBounds[guess] < codePoint) {
+					min = guess;
+				} else if(lowerBounds[guess] > codePoint){
+					max = guess;
+				} else {
+					characterClasses.add(blocks[guess]);
 					return;
 				}
 				
-				if(max - min <= 3) {
-					for(int i = min; i <= max; i++) {
-						if(groups[i].contains(codePoint)) {
-							characterClasses.add(groups[i]);
-							return;
-						}
-					}
-				}
-				
-				Range range = guessedGroup.ranges.iterator().next();
-				if(range.upperBound < codePoint) {
-					min = guess;
+				if(guess == lastGuess && max - min == 1) {
+					characterClasses.add(blocks[++guess]);
+					return;
 				} else {
-					max = guess;
+					lastGuess = guess;
+					guess = (int) (Math.floor((max - min) / 2.0)) + min;
 				}
-				
-				guess = (int) (Math.floor((max - min) / 2.0)) + min;
 			}
 		}
 	}
