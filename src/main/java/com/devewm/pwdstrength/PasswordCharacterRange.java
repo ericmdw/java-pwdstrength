@@ -81,7 +81,7 @@ public class PasswordCharacterRange {
 		
 		CharacterBlock[] blocks = CharacterBlock.values();
 		
-		if(codePoint < 0x10000) {
+		if(codePoint < 0x7f) {
 			for(int i = 0; i < blocks.length; i++) {
 				CharacterBlock group = blocks[i];
 				if(group.contains(codePoint)) {
@@ -89,11 +89,6 @@ public class PasswordCharacterRange {
 					return;
 				}
 			}
-		} 
-		
-		else if(CharacterBlock._UNUSED.contains(codePoint)) {
-			this.characterClasses.add(CharacterBlock._UNUSED);
-			return;
 		} 
 		
 		else {
@@ -112,15 +107,24 @@ public class PasswordCharacterRange {
 					return;
 				}
 				
-				if(guess == lastGuess && max - min == 1) {
-					characterClasses.add(blocks[++guess]);
-					return;
+				if(guess == lastGuess && max - min < 2) {
+					if(lowerBounds[guess+1] <= codePoint && upperBounds[guess+1] <= codePoint) {
+						characterClasses.add(blocks[++guess]);
+						return;
+					} else {
+						break;
+					}
 				} else {
 					lastGuess = guess;
 					guess = (int) (Math.floor((max - min) / 2.0)) + min;
 				}
 			}
 		}
+		
+		if(CharacterBlock._UNUSED.contains(codePoint)) {
+			this.characterClasses.add(CharacterBlock._UNUSED);
+			return;
+		} 
 	}
 
 	/**
