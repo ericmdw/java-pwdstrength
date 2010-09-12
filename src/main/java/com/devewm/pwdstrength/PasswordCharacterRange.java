@@ -47,7 +47,8 @@ public class PasswordCharacterRange {
 			initBoundsArrays();
 		}
 		
-		for(int i = 0; i < password.codePointCount(0, password.length()); i++) {
+		int passwordLength = password.codePointCount(0, password.length());
+		for(int i = 0; i < passwordLength; i++) {
 			this.add(password.codePointAt(i));
 		}
 	}
