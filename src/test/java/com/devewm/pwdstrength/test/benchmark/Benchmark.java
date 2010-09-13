@@ -29,7 +29,6 @@ public class Benchmark {
 			
 			spread++;
 			if(spread >= Math.ceil((double) Character.MAX_CODE_POINT / PasswordStrengthMeter.PASSWORD_LENGTH_LIMIT)) {
-				System.out.println("Spread hit max, resetting...");
 				spread = 1;
 			}
 			
