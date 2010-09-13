@@ -2,6 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.devewm.pwdstrength</groupId>
 	<artifactId>PasswordStrengthMeter</artifactId>
+	<packaging>jar</packaging>
 	<version>0.9.1-SNAPSHOT</version>
 	<name>Password Strength Meter</name>
 	<description>Provides a common way to determine the strength of a given password, making mandatory length / symbol / number / capital / lower-case requirements unnecessary and obsolete.</description>
@@ -18,6 +19,12 @@
 		<connection>scm:git:git://git@github.com/devewm/java-pwdstrength.git</connection>
 		<developerConnection>scm:git:git://git@github.com/devewm/java-pwdstrength.git</developerConnection>	
 	</scm>
+	<developers>
+		<developer>
+			<name>Eric Montgomery</name>
+			<url>http://devewm.com/</url>
+		</developer>
+	</developers>
 	<build>
 		<plugins>
 			<plugin>
