@@ -107,7 +107,7 @@ public class PasswordStrengthMeter {
 	public boolean satisfiesStrengthClass(String password, PasswordStrengthClass strengthClass) {
 		BigInteger iterationCount = null;
 		try {
-			iterationCount = iterationCount(password);
+			iterationCount = iterationCount(password, false);
 		} catch(MaximumPasswordLengthExceededException lengthException) {
 			// length alone will make this password satisfy any
 			// standard PasswordStrengthClass
@@ -123,10 +123,15 @@ public class PasswordStrengthMeter {
 	 * the count.
 	 * @param passwordPlaintext the password to calculate the count for
 	 * @return a <code>BigInteger</code> representing the number of iterations
-	 * needed to arrive at the given password
+	 * needed to arrive at the given password. If the password length exceeds
+	 * <code>PASSWORD_LENGTH_LIMIT</code> this method will return -1.
 	 */
 	public BigInteger iterationCount(String passwordPlaintext) {
-		return iterationCount(passwordPlaintext, false);
+		try {
+			return iterationCount(passwordPlaintext, false);
+		} catch (MaximumPasswordLengthExceededException e) {
+			return new BigInteger("-1");
+		}
 	}
 	
 	/**
@@ -142,7 +147,7 @@ public class PasswordStrengthMeter {
 	 * length of <code>passwordPlaintext</code> exceeds
 	 * <code>PASSWORD_LENGTH_LIMIT</code>
 	 */
-	public BigInteger iterationCount(String passwordPlaintext, boolean bypassLengthLimitCheck) {
+	public BigInteger iterationCount(String passwordPlaintext, boolean bypassLengthLimitCheck) throws MaximumPasswordLengthExceededException {
 		if(null == passwordPlaintext || passwordPlaintext.length() < 1) {
 			return new BigInteger("0");
 		}
@@ -214,7 +219,7 @@ public class PasswordStrengthMeter {
 		
 		DecimalFormat number = new DecimalFormat();
 		number.setGroupingUsed(true);
-		BigInteger result = passwordStrengthMeter.iterationCount(password.toString(), true);
+		BigInteger result = passwordStrengthMeter.iterationCount(password.toString());
 		System.out.println(password + ": " + number.format(result));
 	}
 	

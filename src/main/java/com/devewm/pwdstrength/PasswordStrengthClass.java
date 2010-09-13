@@ -48,7 +48,7 @@ public enum PasswordStrengthClass implements Comparable<PasswordStrengthClass> {
 		}
 		
 		PasswordStrengthMeter passwordStrengthMeter = PasswordStrengthMeter.getInstance();
-		this.iterationCount = passwordStrengthMeter.iterationCount(basePassword.toString(), false);
+		this.iterationCount = passwordStrengthMeter.iterationCount(basePassword.toString());
 	}
 	
 	/**

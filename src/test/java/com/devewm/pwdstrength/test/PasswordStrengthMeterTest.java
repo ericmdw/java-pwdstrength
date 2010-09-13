@@ -2,6 +2,7 @@ package com.devewm.pwdstrength.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import com.devewm.pwdstrength.PasswordStrengthClass;
 import com.devewm.pwdstrength.PasswordStrengthMeter;
+import com.devewm.pwdstrength.exception.MaximumPasswordLengthExceededException;
 import com.devewm.pwdstrength.test.benchmark.Benchmark;
 import com.devewm.pwdstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
 
@@ -42,7 +44,7 @@ public class PasswordStrengthMeterTest {
 	}
 	
 	@Test
-	public void singleLetterPasswords() {
+	public void singleLetterPasswords() throws MaximumPasswordLengthExceededException {
 		String password;
 		BigInteger result;
 		
@@ -69,7 +71,7 @@ public class PasswordStrengthMeterTest {
 	}
 	
 	@Test
-	public void twoLetterPasswords() {
+	public void twoLetterPasswords() throws MaximumPasswordLengthExceededException {
 		String password;
 		BigInteger result;
 		
@@ -87,7 +89,7 @@ public class PasswordStrengthMeterTest {
 	}
 	
 	@Test
-	public void threeLetterPasswords() {
+	public void threeLetterPasswords() throws MaximumPasswordLengthExceededException {
 		String password;
 		BigInteger result;
 		
@@ -150,7 +152,7 @@ public class PasswordStrengthMeterTest {
 		StringBuffer password = new StringBuffer("");
 		for(int i = 0; i < PasswordStrengthMeter.PASSWORD_LENGTH_LIMIT; i++) {
 			password.append(Character.toChars(rand.nextInt(Character.MAX_CODE_POINT)));
-			passwordStrengthMeter.iterationCount(password.toString(), false);
+			passwordStrengthMeter.iterationCount(password.toString());
 		}
 		
 		Exception exception = null;
@@ -161,12 +163,19 @@ public class PasswordStrengthMeterTest {
 			exception = ex;
 		}
 		assertNotNull(exception);
+		exception = null;
 		
-		passwordStrengthMeter.iterationCount(password.toString(), true);
+		try {
+			passwordStrengthMeter.iterationCount(password.toString(), true);
+		} catch (MaximumPasswordLengthExceededException e) {
+			exception = e;
+		}
+		
+		assertNull(exception);
 	}
 	
 	@Test
-	public void strengthClassifications() {
+	public void strengthClassifications() throws MaximumPasswordLengthExceededException {
 		String password;
 		BigInteger result;
 		
