@@ -1,6 +1,7 @@
 package com.devewm.pwdstrength;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,6 +20,9 @@ import java.util.TreeSet;
  */
 public class PasswordCharacterRange {
 	
+	private static int[] lowerBounds = new int[0];
+	private static int[] upperBounds = new int[0];
+	
 	/**
 	 * Stores the unicode blocks found for this password. Stored in
 	 * a TreeSet for consistent ordering regardless of what order
@@ -32,17 +36,39 @@ public class PasswordCharacterRange {
 	 * @param password The password to base this range on
 	 */
 	public PasswordCharacterRange(String password) {
+		
 		characterClasses = new TreeSet<CharacterBlock>();
 		
 		if(null == password) {
 			return;
 		}
 		
-		for(int i = 0; i < password.length(); i++) {
+		if(lowerBounds.length < 1) {
+			initBoundsArrays();
+		}
+		
+		int passwordLength = password.codePointCount(0, password.length());
+		for(int i = 0; i < passwordLength; i++) {
 			this.add(password.codePointAt(i));
 		}
 	}
 	
+	private void initBoundsArrays() {
+		lowerBounds = new int[CharacterBlock.values().length];
+		upperBounds = new int[CharacterBlock.values().length];
+		
+		for(CharacterBlock block : CharacterBlock.values()) {
+			int index = block.ordinal();
+			Iterator<Range> i = block.ranges.iterator();
+			Range range = i.next();
+			lowerBounds[index] = range.getLowerBound();
+			while(i.hasNext()) {
+				range = i.next();
+			}
+			upperBounds[index] = range.getUpperBound();
+		}
+	}
+
 	/**
 	 * Finds the unicode block for the given unicode codepoint and
 	 * adds the block to this range.
@@ -54,14 +80,54 @@ public class PasswordCharacterRange {
 			return;
 		}
 		
-		for(CharacterBlock group : CharacterBlock.values()) {
-			if(group.contains(codePoint)) {
-				this.characterClasses.add(group);
-				break;
+		CharacterBlock[] blocks = CharacterBlock.values();
+		
+		if(codePoint < 0x7f) {
+			for(int i = 0; i < blocks.length; i++) {
+				CharacterBlock group = blocks[i];
+				if(group.contains(codePoint)) {
+					this.characterClasses.add(group);
+					return;
+				}
+			}
+		} 
+		
+		else {
+			// binary search
+			int min = CharacterBlock.LATIN_EXTENDED_A.ordinal();
+			int max = CharacterBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ordinal();
+			int guess = (int) (Math.floor((max - min) / 2.0)) + min;
+			int lastGuess = -1;
+			while(true) {
+				if(upperBounds[guess] < codePoint) {
+					min = guess;
+				} else if(lowerBounds[guess] > codePoint){
+					max = guess;
+				} else {
+					characterClasses.add(blocks[guess]);
+					return;
+				}
+				
+				if(guess == lastGuess && max - min < 2) {
+					if(lowerBounds[guess+1] <= codePoint && upperBounds[guess+1] <= codePoint) {
+						characterClasses.add(blocks[++guess]);
+						return;
+					} else {
+						break;
+					}
+				} else {
+					lastGuess = guess;
+					guess = (int) (Math.floor((max - min) / 2.0)) + min;
+				}
 			}
 		}
+		
+		if(CharacterBlock._UNUSED.contains(codePoint)) {
+			this.characterClasses.add(CharacterBlock._UNUSED);
+			return;
+		} 
 	}
-	
+
 	/**
 	 * Returns the total number of characters that occur in this
 	 * range.

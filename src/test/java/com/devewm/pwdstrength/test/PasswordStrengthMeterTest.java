@@ -4,15 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.devewm.pwdstrength.PasswordCharacterRange;
 import com.devewm.pwdstrength.PasswordStrengthClass;
 import com.devewm.pwdstrength.PasswordStrengthMeter;
+import com.devewm.pwdstrength.test.benchmark.Benchmark;
 import com.devewm.pwdstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
 
 public class PasswordStrengthMeterTest {
@@ -20,8 +21,15 @@ public class PasswordStrengthMeterTest {
 	private PasswordStrengthMeter passwordStrengthMeter;
 	
 	@Before
-	public void setupDefaultImpl() {
+	public void setupDefaultImpl() throws Exception {
 		this.passwordStrengthMeter = PasswordStrengthMeter.getInstance();
+		
+		Field field = PasswordStrengthMeter.class.getDeclaredField("verifyPartialSumResult");
+		if(!field.isAccessible()) {
+			field.setAccessible(true);
+		}
+		
+		field.set(passwordStrengthMeter, true);
 	}
 	
 	@Test
@@ -328,18 +336,11 @@ public class PasswordStrengthMeterTest {
 	}
 	
 	@Test
-	public void characterRanges() {
-		for(int i = 0; i <= Character.MAX_CODE_POINT; i++) {
-			char[] codePointChars = Character.toChars(i);
-			String password = new String(codePointChars);
-			if(codePointChars.length > 1) {
-				assertTrue(Character.codePointCount(password, 0, password.length()) == 1);
-			}
-			
-			assertTrue(Character.isValidCodePoint(i));
-			
-			PasswordCharacterRange range = new PasswordCharacterRange(password);
-			assertTrue(i + " is a valid codepoint in a known unicode block", range.size() > 0);
-		}
+	public void benchmarkTest() {
+		// this is really just to verify the partial-sum
+		// algorithm in PasswordStrengthMeter. The result
+		// of that algorithm is verified with a slower algorithm
+		// when run in the context of a test.
+		Benchmark.bench(10000);
 	}
 }

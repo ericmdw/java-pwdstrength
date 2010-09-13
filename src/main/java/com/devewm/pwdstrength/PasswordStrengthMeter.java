@@ -2,7 +2,6 @@ package com.devewm.pwdstrength;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -31,7 +30,8 @@ public class PasswordStrengthMeter {
 	 */
 	public static final int PASSWORD_LENGTH_LIMIT = 256;
 	private static final int BIG_DECIMAL_SCALE = 4096;
-	private static final MathContext roundingContext = new MathContext(8, RoundingMode.HALF_UP);
+	
+	private boolean verifyPartialSumResult = false;
 	
 	/**
 	 * Implementation instance cache to assist this and subclasses with
@@ -166,18 +166,18 @@ public class PasswordStrengthMeter {
 		BigDecimal partialSumResult = partialSumMultiplier.multiply(new BigDecimal(partialSumInner));
 		result = partialSumResult.setScale(0, RoundingMode.HALF_UP).toBigIntegerExact();
 		
-//		BigInteger slowResult = new BigInteger("0");
-//		for(int i = 1; i < passwordLength; i++) {
-//			BigInteger iteration = rangeSize.pow(i);
-//			slowResult = slowResult.add(iteration);
-//		}
-//		
-//		boolean resultsMatch = result.compareTo(slowResult) == 0;
-////		result = slowResult;
-//		if(!resultsMatch) {
-//			System.out.println("Values didn't match on password with length " + passwordLength + ". Terminating.");
-//			System.exit(1);
-//		}
+		if(verifyPartialSumResult) {
+			BigInteger slowResult = new BigInteger("0");
+			for(int i = 1; i < passwordLength; i++) {
+				BigInteger iteration = rangeSize.pow(i);
+				slowResult = slowResult.add(iteration);
+			}
+			
+			boolean resultsMatch = result.compareTo(slowResult) == 0;
+			if(!resultsMatch) {
+				throw new RuntimeException("Values didn't match on password with length " + passwordLength);
+			}
+		}
 		
 		for(int i = 1; i <= passwordLength; i++) {
 			int power = passwordPlaintext.length() - i;

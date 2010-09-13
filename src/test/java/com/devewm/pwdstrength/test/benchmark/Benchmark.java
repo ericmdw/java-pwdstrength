@@ -1,4 +1,4 @@
-package com.devewm.pwdstrength.benchmark;
+package com.devewm.pwdstrength.test.benchmark;
 
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -8,14 +8,14 @@ import com.devewm.pwdstrength.PasswordStrengthMeter;
 public class Benchmark {
 	public static final long RUN_TIME_MS = 30000;
 	
-	public static BigInteger bench() {
+	public static BigInteger bench(long timelimit) {
 		PasswordStrengthMeter meter = PasswordStrengthMeter.getInstance();
 		BigInteger result = new BigInteger("0");
 		BigInteger incrementor = new BigInteger("1");
 		long startTime = System.currentTimeMillis();
 		boolean timeExceeded = false;
 		
-		int spread = 1;
+		int spread = 64;
 		while(!timeExceeded) {
 			
 			String password = new String(Character.toChars(1));
@@ -25,7 +25,7 @@ public class Benchmark {
 			
 			meter.iterationCount(password);
 			result = result.add(incrementor);
-			timeExceeded = System.currentTimeMillis() >= startTime + RUN_TIME_MS;
+			timeExceeded = System.currentTimeMillis() >= startTime + timelimit;
 			
 			spread++;
 			if(spread >= Math.ceil((double) Character.MAX_CODE_POINT / PasswordStrengthMeter.PASSWORD_LENGTH_LIMIT)) {
@@ -40,7 +40,7 @@ public class Benchmark {
 	
 	public static void main(String[] args) {
 		System.out.println("Starting benchmark, will run for " + RUN_TIME_MS + "ms...");
-		BigInteger result = bench();
+		BigInteger result = bench(RUN_TIME_MS);
 		System.out.println("Done.");
 		
 		DecimalFormat number = new DecimalFormat();
