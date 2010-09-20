@@ -97,28 +97,17 @@ public class PasswordCharacterRange {
 			int min = CharacterBlock.LATIN_EXTENDED_A.ordinal();
 			int max = CharacterBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ordinal();
 			int guess = (int) (Math.floor((max - min) / 2.0)) + min;
-			int lastGuess = -1;
-			while(true) {
+			while(max >= min) {
 				if(upperBounds[guess] < codePoint) {
-					min = guess;
+					min = guess + 1;
 				} else if(lowerBounds[guess] > codePoint){
-					max = guess;
+					max = guess - 1;
 				} else {
 					characterClasses.add(blocks[guess]);
 					return;
 				}
 				
-				if(guess == lastGuess && max - min < 2) {
-					if(lowerBounds[guess+1] <= codePoint && upperBounds[guess+1] <= codePoint) {
-						characterClasses.add(blocks[++guess]);
-						return;
-					} else {
-						break;
-					}
-				} else {
-					lastGuess = guess;
-					guess = (int) (Math.floor((max - min) / 2.0)) + min;
-				}
+				guess = (int) (Math.floor((max - min) / 2.0)) + min;
 			}
 		}
 		
