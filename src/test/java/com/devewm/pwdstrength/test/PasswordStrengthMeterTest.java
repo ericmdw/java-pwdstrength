@@ -344,5 +344,60 @@ public class PasswordStrengthMeterTest {
 	}
 	
 	@Test
+	public void supplementaryCharacters() {
+		String password;
+		BigInteger result;
+		
+		// test a single-character password from LINEAR_B_SYLLABARY, 
+		// 128 characters in range
+		
+		assertTrue(Character.isSupplementaryCodePoint(0x10000));
+		password = new String(Character.toChars(0x10000));
+		assertTrue(password.length() == 2);
+		assertTrue(password.codePointCount(0, password.length()) == 1);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("1"), result);
+		
+		assertTrue(Character.isSupplementaryCodePoint(0x10001));
+		password = new String(Character.toChars(0x10001));
+		assertTrue(password.length() == 2);
+		assertTrue(password.codePointCount(0, password.length()) == 1);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("2"), result);
+		
+		// test a single character from CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
+		// 42,719 characters in range
+		assertTrue(Character.isSupplementaryCodePoint(0x20000));
+		password = new String(Character.toChars(0x20000));
+		assertTrue(password.length() == 2);
+		assertTrue(password.codePointCount(0, password.length()) == 1);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("1"), result);
+		
+		assertTrue(Character.isSupplementaryCodePoint(0x20001));
+		password = new String(Character.toChars(0x20001));
+		assertTrue(password.length() == 2);
+		assertTrue(password.codePointCount(0, password.length()) == 1);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("2"), result);
+		
+		// test a two-character password from LINEAR_B_SYLLABARY
+		password = new String(Character.toChars(0x10000)) + new String(Character.toChars(0x10000));
+		assertTrue(password.length() == 4);
+		assertTrue(password.codePointCount(0, password.length()) == 2);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("129"), result);
+		
+		password = new String(Character.toChars(0x10000)) + new String(Character.toChars(0x10001));
+		assertTrue(password.length() == 4);
+		assertTrue(password.codePointCount(0, password.length()) == 2);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("130"), result);
+		
+		password = new String(Character.toChars(0x10001)) + new String(Character.toChars(0x10000));
+		assertTrue(password.length() == 4);
+		assertTrue(password.codePointCount(0, password.length()) == 2);
+		result = passwordStrengthMeter.iterationCount(password);
+		assertEquals(new BigInteger("257"), result);
 	}
 }
