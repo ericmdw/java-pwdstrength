@@ -184,9 +184,16 @@ public class PasswordStrengthMeter {
 			}
 		}
 		
-		for(int i = 1; i <= passwordLength; i++) {
-			int power = passwordPlaintext.length() - i;
-			long placeValue = range.position(passwordPlaintext.codePointAt(i - 1));
+		for(int i = 1, supplementalCharCount = 0; i <= passwordPlaintext.length(); i++) {
+			int power = passwordLength - (i - supplementalCharCount);
+			int codePoint = passwordPlaintext.codePointAt(i - 1);
+			long placeValue = range.position(codePoint);
+			
+			if(Character.isSupplementaryCodePoint(codePoint)) {
+				// skip low-surrogate code unit
+				i++;
+				supplementalCharCount++;
+			}
 			
 			if(power == 0 && placeValue == 0) {
 				continue;
