@@ -15,7 +15,6 @@ import org.junit.Test;
 import com.devewm.pwdstrength.PasswordStrengthClass;
 import com.devewm.pwdstrength.PasswordStrengthMeter;
 import com.devewm.pwdstrength.exception.MaximumPasswordLengthExceededException;
-import com.devewm.pwdstrength.test.benchmark.Benchmark;
 import com.devewm.pwdstrength.test.mockimpl.MockPasswordStrengthMeterImpl;
 
 public class PasswordStrengthMeterTest {
@@ -345,11 +344,5 @@ public class PasswordStrengthMeterTest {
 	}
 	
 	@Test
-	public void benchmarkTest() {
-		// this is really just to verify the partial-sum
-		// algorithm in PasswordStrengthMeter. The result
-		// of that algorithm is verified with a slower algorithm
-		// when run in the context of a test.
-		Benchmark.bench(10000);
 	}
 }
